@@ -1,0 +1,28 @@
+name: Daily Bus Sync
+on:
+  schedule:
+    # This is the timer. '0 12' means 12:00 PM UTC.
+    - cron: '0 12 * * *' 
+  workflow_dispatch: # This adds a 'Run' button so you can test it manually
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+
+      - name: Install dependencies
+        run: pip install supabase
+
+      - name: Run sync script
+        env:
+          # This pulls your keys safely from the 'Secrets' we set up
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+        run: python sync_bus.py
