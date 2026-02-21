@@ -4,7 +4,7 @@ from supabase import create_client, Client
 import os
 url = os.environ.get("SUPABASE_URL")
 key = os.environ.get("SUPABASE_KEY")
-supabase: Client = create_client(url, secret_key)
+supabase: Client = create_client(url, key)
 
 # 2. Data from your KSRTC screenshot
     # UPDATE: I have added 'seats_left' for all 10 buses from your screenshot
