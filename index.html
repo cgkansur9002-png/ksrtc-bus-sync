@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>SIRSI-BNG LIVE PORTAL</title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background: #f0f2f5; padding: 20px; }
+        .header { text-align: center; color: #1d3557; border-bottom: 3px solid #e63946; padding-bottom: 10px; }
+        .bus-list { max-width: 600px; margin: 20px auto; }
+        .bus-card { 
+            background: white; margin-bottom: 15px; padding: 15px; border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1); border-left: 8px solid #e63946;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .bus-type { font-weight: bold; color: #333; margin: 0; }
+        .service-no { color: #457b9d; font-size: 0.9em; margin: 5px 0; }
+        .seats { color: #e63946; font-weight: bold; font-size: 1.1em; margin: 5px 0; }
+        .timings { font-size: 1.1em; color: #555; }
+        .book-btn { 
+            background: #e63946; color: white; border: none; padding: 12px 18px;
+            border-radius: 5px; text-decoration: none; font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>BENGALURU ↔ SIRSI</h1>
+        <p>Live Backhand Sync: ONLINE</p>
+    </div>
+
+    <div id="display-area" class="bus-list">
+        <p style="text-align: center;">Connecting to Backhand...</p>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <script>
+        const SUPABASE_URL = "https://xgouhyxtmellbxfwnivz.supabase.co";
+        const SUPABASE_KEY = "sb_publishable_BLi68iB6q7x33l1cGm__JQ_fXckBqNf";
+        const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        async function loadBuses() {
+            const display = document.getElementById('display-area');
+            try {
+                let { data: buses, error } = await _supabase
+                    .from('bus_schedule')
+                    .select('*');
+
+                if (error) throw error;
+
+                display.innerHTML = buses.map(bus => `
+                    <div class="bus-card">
+                        <div>
+                            <p class="bus-type">${bus.bus_type}</p>
+                            <p class="service-no">Service: ${bus.service_no}</p>
+                            <p class="seats">${bus.seats_left || 'Seats: Check Web'}</p>
+                            <div class="timings"><b>${bus.departure}</b> → ${bus.arrival}</div>
+                        </div>
+                        <a href="https://www.ksrtc.in/oprs-web/avail/services.do?atb=true&startCity=BENGALURU&endCity=SIRSI" 
+                           target="_blank" class="book-btn">SELECT SEAT</a>
+                    </div>
+                `).join('');
+            } catch (err) {
+                display.innerHTML = "Connection Error: " + err.message;
+            }
+        }
+        loadBuses();
+    </script>
+</body>
+</html>
